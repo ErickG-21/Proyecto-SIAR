@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { MenuModule } from "./components/MenuModule";
+import { OrdersModule } from "./components/OrdersModule";
 
 type Module = "Resumen" | "Pedidos" | "Menú" | "Inventario" | "Usuarios";
 type User = { id: string; name: string; email: string; role: "ADMIN" | "WAITER"; active: boolean; createdAt: string };
@@ -35,7 +36,7 @@ export default function Home() {
   const [password, setPassword] = useState("admin123");
   const [loginError, setLoginError] = useState("");
   const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const [currentUser, setCurrentUser] = useState({ name: "Andrea García", role: "Administrador" });
+  const [currentUser, setCurrentUser] = useState({ id: "", name: "Andrea García", role: "Administrador" });
 
   async function handleLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -52,6 +53,7 @@ export default function Home() {
       if (response.ok) {
         const data = await response.json();
         setCurrentUser({
+          id: data.user.id,
           name: data.user.name,
           role: data.user.role === "ADMIN" ? "Administrador" : "Mesero"
         });
@@ -109,7 +111,7 @@ export default function Home() {
       </aside>
       <section className="content">
         <header className="topbar"><div><p className="breadcrumb">Inicio / <b>{activeModule}</b></p><h1>{activeModule === "Resumen" ? "Buenos días, Andrea" : activeModule}</h1></div><div className="top-actions"><button className="icon-button">⌕</button><button className="icon-button notification">♢<i /></button><div className="header-avatar">AG</div></div></header>
-        {activeModule === "Resumen" ? <Dashboard /> : activeModule === "Usuarios" ? <UsersModule /> : activeModule === "Menú" ? <MenuModule /> : <ModulePlaceholder module={activeModule} />}
+        {activeModule === "Resumen" ? <Dashboard /> : activeModule === "Usuarios" ? <UsersModule /> : activeModule === "Menú" ? <MenuModule /> : activeModule === "Pedidos" ? <OrdersModule waiterId={currentUser.id} /> : <ModulePlaceholder module={activeModule} />}
       </section>
     </main>
   );
