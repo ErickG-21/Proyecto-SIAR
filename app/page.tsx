@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useState } from "react";
 import { MenuModule } from "./components/MenuModule";
 import { OrdersModule } from "./components/OrdersModule";
+import { InventoryModule } from "./components/InventoryModule";
 
 type Module = "Resumen" | "Pedidos" | "Menú" | "Inventario" | "Usuarios";
 type User = { id: string; name: string; email: string; role: "ADMIN" | "WAITER"; active: boolean; createdAt: string };
@@ -111,7 +112,7 @@ export default function Home() {
       </aside>
       <section className="content">
         <header className="topbar"><div><p className="breadcrumb">Inicio / <b>{activeModule}</b></p><h1>{activeModule === "Resumen" ? "Buenos días, Andrea" : activeModule}</h1></div><div className="top-actions"><button className="icon-button">⌕</button><button className="icon-button notification">♢<i /></button><div className="header-avatar">AG</div></div></header>
-        {activeModule === "Resumen" ? <Dashboard /> : activeModule === "Usuarios" ? <UsersModule /> : activeModule === "Menú" ? <MenuModule /> : activeModule === "Pedidos" ? <OrdersModule waiterId={currentUser.id} /> : <ModulePlaceholder module={activeModule} />}
+        {activeModule === "Resumen" ? <Dashboard /> : activeModule === "Usuarios" ? <UsersModule /> : activeModule === "Menú" ? <MenuModule /> : activeModule === "Pedidos" ? <OrdersModule waiterId={currentUser.id} /> : activeModule === "Inventario" ? <InventoryModule /> : <ModulePlaceholder module={activeModule} />}
       </section>
     </main>
   );
