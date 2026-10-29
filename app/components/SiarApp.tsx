@@ -1,7 +1,8 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import { LoginScreen, type AuthenticatedUser } from "./LoginScreen";
+import { LoginScreen } from "./LoginScreen";
+import { AuthProvider, useAuth } from "../state/auth-state";
 import { MenuModule } from "./MenuModule";
 import { OrdersModule } from "./OrdersModule";
 import { InventoryModule } from "./InventoryModule";
@@ -31,13 +32,15 @@ const stock = [
 ];
 
 export function SiarApp() {
-  const [authenticated, setAuthenticated] = useState(false);
-  const [activeModule, setActiveModule] = useState<Module>("Resumen");
-  const [currentUser, setCurrentUser] = useState({ id: "", name: "Andrea García", role: "Administrador" });
+  return <AuthProvider><AuthenticatedApp /></AuthProvider>;
+}
 
-  if (!authenticated) {
-    return <LoginScreen onLogin={(user: AuthenticatedUser) => { setCurrentUser(user); setAuthenticated(true); }} />;
-  }
+function AuthenticatedApp() {
+  const [activeModule, setActiveModule] = useState<Module>("Resumen");
+  const { state, dispatch } = useAuth();
+  const currentUser = state.status === "authenticated" ? state.user : null;
+
+  if (!currentUser) return <LoginScreen />;
 
   return (
     <main className="app-shell">
@@ -46,7 +49,7 @@ export function SiarApp() {
         <div className="restaurant-switch"><span className="restaurant-icon">🍴</span><span><b>La Esquina</b><small>Restaurante principal</small></span><span className="chevron">⌄</span></div>
         <p className="nav-label">MENÚ PRINCIPAL</p>
         <nav>{modules.map((module) => <button key={module.name} className={activeModule === module.name ? "nav-item active" : "nav-item"} onClick={() => setActiveModule(module.name)}><span>{module.icon}</span>{module.name}{module.name === "Pedidos" && <em>4</em>}</button>)}</nav>
-        <div className="sidebar-bottom"><button className="nav-item"><span>⚙</span>Configuración</button><button className="nav-item logout" onClick={() => setAuthenticated(false)}><span>↪</span>Cerrar sesión</button><div className="user-mini"><div className="avatar">{currentUser.name.slice(0, 2).toUpperCase()}</div><span><b>{currentUser.name}</b><small>{currentUser.role}</small></span><span>•••</span></div></div>
+        <div className="sidebar-bottom"><button className="nav-item"><span>⚙</span>Configuración</button><button className="nav-item logout" onClick={() => dispatch({ type: "LOGOUT" })}><span>↪</span>Cerrar sesión</button><div className="user-mini"><div className="avatar">{currentUser.name.slice(0, 2).toUpperCase()}</div><span><b>{currentUser.name}</b><small>{currentUser.role}</small></span><span>•••</span></div></div>
       </aside>
       <section className="content">
         <header className="topbar"><div><p className="breadcrumb">Inicio / <b>{activeModule}</b></p><h1>{activeModule === "Resumen" ? "Buenos días, Andrea" : activeModule}</h1></div><div className="top-actions"><button className="icon-button">⌕</button><button className="icon-button notification">♢<i /></button><div className="header-avatar">AG</div></div></header>

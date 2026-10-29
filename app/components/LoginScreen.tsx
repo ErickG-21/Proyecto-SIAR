@@ -1,40 +1,21 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { siarFacade } from "../../lib/facades/siar-facade";
+import { useAuth } from "../state/auth-state";
 
-export type AuthenticatedUser = { id: string; name: string; role: string };
-
-export function LoginScreen({ onLogin }: { onLogin: (user: AuthenticatedUser) => void }) {
+export function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loginError, setLoginError] = useState("");
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const { state, dispatch } = useAuth();
 
   async function handleLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setIsLoggingIn(true);
-    setLoginError("");
+    dispatch({ type: "LOGIN_STARTED" });
     try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-      });
-      if (!response.ok) {
-        const data = await response.json();
-        setLoginError(data.message || "Verifica tus credenciales e inténtalo nuevamente.");
-        return;
-      }
-      const data = await response.json();
-      onLogin({
-        id: data.user.id,
-        name: data.user.name,
-        role: data.user.role === "ADMIN" ? "Administrador" : "Mesero"
-      });
-    } catch {
-      setLoginError("No se pudo conectar con el servidor. Inténtalo nuevamente.");
-    } finally {
-      setIsLoggingIn(false);
+      dispatch({ type: "LOGIN_SUCCEEDED", user: await siarFacade.login(email, password) });
+    } catch (error) {
+      dispatch({ type: "LOGIN_FAILED", error: error instanceof Error ? error.message : "No se pudo iniciar sesión." });
     }
   }
 
@@ -57,8 +38,8 @@ export function LoginScreen({ onLogin }: { onLogin: (user: AuthenticatedUser) =>
         <label htmlFor="password">Contraseña</label>
         <input id="password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} />
         <div className="form-options"><label className="check"><input type="checkbox" defaultChecked /> Recordarme</label><a href="#recover">¿Olvidaste tu contraseña?</a></div>
-        {loginError && <p className="error">{loginError}</p>}
-        <button className="primary-button" type="submit" disabled={isLoggingIn}>{isLoggingIn ? "Validando..." : "Ingresar al sistema"} <span>→</span></button>
+        {state.status === "error" && <p className="error">{state.error}</p>}
+        <button className="primary-button" type="submit" disabled={state.status === "loading"}>{state.status === "loading" ? "Validando..." : "Ingresar al sistema"} <span>→</span></button>
       </form>
     </section>
   </main>;
