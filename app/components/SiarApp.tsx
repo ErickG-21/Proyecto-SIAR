@@ -50,7 +50,7 @@ export function SiarApp() {
       </aside>
       <section className="content">
         <header className="topbar"><div><p className="breadcrumb">Inicio / <b>{activeModule}</b></p><h1>{activeModule === "Resumen" ? "Buenos días, Andrea" : activeModule}</h1></div><div className="top-actions"><button className="icon-button">⌕</button><button className="icon-button notification">♢<i /></button><div className="header-avatar">AG</div></div></header>
-        {activeModule === "Resumen" ? <Dashboard /> : activeModule === "Usuarios" ? <UsersModule /> : activeModule === "Menú" ? <MenuModule /> : activeModule === "Pedidos" ? <OrdersModule waiterId={currentUser.id} /> : activeModule === "Inventario" ? <InventoryModule /> : <ModulePlaceholder module={activeModule} />}
+        {activeModule === "Resumen" ? <Dashboard /> : activeModule === "Usuarios" ? <UsersModule /> : activeModule === "Menú" ? <MenuModule /> : activeModule === "Pedidos" ? <OrdersModule waiterId={currentUser.id} /> : <InventoryModule />}
       </section>
     </main>
   );
@@ -74,10 +74,6 @@ function Dashboard() {
 
 function Metric({ title, value, detail, trend, icon }: { title: string; value: string; detail: string; trend: string; icon: string }) {
   return <article className="metric"><div className={`metric-icon ${trend}`}>{icon}</div><div className="metric-title">{title}<span>ⓘ</span></div><strong>{value}</strong><small className={trend === "down" ? "negative" : trend === "alert" ? "warning" : ""}>{trend === "up" ? "↗" : trend === "down" ? "↘" : "!"} {detail}</small></article>;
-}
-
-function ModulePlaceholder({ module }: { module: Module }) {
-  return <div className="empty-module"><div className="empty-icon">☷</div><h2>Módulo de {module.toLowerCase()}</h2><p>Esta sección está lista para conectar con los datos del sistema.</p><button className="primary-button">Crear primer registro <span>→</span></button></div>;
 }
 
 function UsersModule() {
