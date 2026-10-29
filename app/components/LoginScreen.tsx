@@ -5,8 +5,8 @@ import { FormEvent, useState } from "react";
 export type AuthenticatedUser = { id: string; name: string; role: string };
 
 export function LoginScreen({ onLogin }: { onLogin: (user: AuthenticatedUser) => void }) {
-  const [email, setEmail] = useState("admin@siar.com");
-  const [password, setPassword] = useState("admin123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
@@ -60,7 +60,6 @@ export function LoginScreen({ onLogin }: { onLogin: (user: AuthenticatedUser) =>
         {loginError && <p className="error">{loginError}</p>}
         <button className="primary-button" type="submit" disabled={isLoggingIn}>{isLoggingIn ? "Validando..." : "Ingresar al sistema"} <span>→</span></button>
       </form>
-      <p className="demo-hint">El acceso se valida contra la base de datos PostgreSQL.</p>
     </section>
   </main>;
 }
