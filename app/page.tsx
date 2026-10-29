@@ -1,0 +1,137 @@
+"use client";
+
+import { FormEvent, useState } from "react";
+
+type Module = "Resumen" | "Pedidos" | "Menú" | "Inventario" | "Usuarios";
+
+const modules: { name: Module; icon: string }[] = [
+  { name: "Resumen", icon: "⌂" },
+  { name: "Pedidos", icon: "▣" },
+  { name: "Menú", icon: "☷" },
+  { name: "Inventario", icon: "◫" },
+  { name: "Usuarios", icon: "♙" }
+];
+
+const orders = [
+  { id: "#1048", table: "Mesa 04", client: "Carlos Mendoza", total: "$ 48.500", status: "En preparación", tone: "orange" },
+  { id: "#1047", table: "Mesa 02", client: "Laura Gómez", total: "$ 32.000", status: "Listo para entregar", tone: "green" },
+  { id: "#1046", table: "Domicilio", client: "Andrés Ruiz", total: "$ 61.500", status: "Pendiente", tone: "blue" },
+  { id: "#1045", table: "Mesa 07", client: "Sofía Torres", total: "$ 27.000", status: "Entregado", tone: "gray" }
+];
+
+const stock = [
+  { name: "Tomate chonto", category: "Vegetales", amount: "3.2 kg", progress: 24, tone: "red" },
+  { name: "Carne de res", category: "Proteínas", amount: "12.5 kg", progress: 68, tone: "green" },
+  { name: "Pan brioche", category: "Panadería", amount: "36 und.", progress: 45, tone: "orange" }
+];
+
+export default function Home() {
+  const [authenticated, setAuthenticated] = useState(false);
+  const [activeModule, setActiveModule] = useState<Module>("Resumen");
+  const [email, setEmail] = useState("admin@siar.com");
+  const [password, setPassword] = useState("admin123");
+  const [loginError, setLoginError] = useState("");
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [currentUser, setCurrentUser] = useState({ name: "Andrea García", role: "Administrador" });
+
+  async function handleLogin(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setIsLoggingIn(true);
+    setLoginError("");
+
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setCurrentUser({
+          name: data.user.name,
+          role: data.user.role === "ADMIN" ? "Administrador" : "Mesero"
+        });
+        setAuthenticated(true);
+        return;
+      }
+
+      const data = await response.json();
+      setLoginError(data.message || "Verifica tus credenciales e inténtalo nuevamente.");
+    } catch {
+      setLoginError("No se pudo conectar con el servidor. Inténtalo nuevamente.");
+    } finally {
+      setIsLoggingIn(false);
+    }
+  }
+
+  if (!authenticated) {
+    return (
+      <main className="login-page">
+        <section className="login-brand">
+          <div className="brand-mark large">S</div>
+          <p className="eyebrow">Sistema Integral de Administración</p>
+          <h1>Todo tu restaurante,<br /><span>en un solo lugar.</span></h1>
+          <p className="brand-copy">Gestiona pedidos, menú e inventario con claridad para que tu equipo se concentre en lo importante.</p>
+          <div className="login-decoration"><span>01</span><i /><span>SIAR</span></div>
+        </section>
+        <section className="login-card">
+          <div className="mobile-logo"><div className="brand-mark">S</div><strong>SIAR</strong></div>
+          <p className="eyebrow">Bienvenido de nuevo</p>
+          <h2>Iniciar sesión</h2>
+          <p className="muted">Ingresa tus datos para acceder al sistema.</p>
+          <form onSubmit={handleLogin}>
+            <label htmlFor="email">Correo electrónico</label>
+            <input id="email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} />
+            <label htmlFor="password">Contraseña</label>
+            <input id="password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} />
+            <div className="form-options"><label className="check"><input type="checkbox" defaultChecked /> Recordarme</label><a href="#recover">¿Olvidaste tu contraseña?</a></div>
+            {loginError && <p className="error">{loginError}</p>}
+            <button className="primary-button" type="submit" disabled={isLoggingIn}>{isLoggingIn ? "Validando..." : "Ingresar al sistema"} <span>→</span></button>
+          </form>
+          <p className="demo-hint">El acceso se valida contra la base de datos PostgreSQL.</p>
+        </section>
+      </main>
+    );
+  }
+
+  return (
+    <main className="app-shell">
+      <aside className="sidebar">
+        <div className="brand"><div className="brand-mark">S</div><strong>SIAR</strong><small>ADMINISTRACIÓN</small></div>
+        <div className="restaurant-switch"><span className="restaurant-icon">🍴</span><span><b>La Esquina</b><small>Restaurante principal</small></span><span className="chevron">⌄</span></div>
+        <p className="nav-label">MENÚ PRINCIPAL</p>
+        <nav>{modules.map((module) => <button key={module.name} className={activeModule === module.name ? "nav-item active" : "nav-item"} onClick={() => setActiveModule(module.name)}><span>{module.icon}</span>{module.name}{module.name === "Pedidos" && <em>4</em>}</button>)}</nav>
+        <div className="sidebar-bottom"><button className="nav-item"><span>⚙</span>Configuración</button><button className="nav-item logout" onClick={() => setAuthenticated(false)}><span>↪</span>Cerrar sesión</button><div className="user-mini"><div className="avatar">{currentUser.name.slice(0, 2).toUpperCase()}</div><span><b>{currentUser.name}</b><small>{currentUser.role}</small></span><span>•••</span></div></div>
+      </aside>
+      <section className="content">
+        <header className="topbar"><div><p className="breadcrumb">Inicio / <b>{activeModule}</b></p><h1>{activeModule === "Resumen" ? "Buenos días, Andrea" : activeModule}</h1></div><div className="top-actions"><button className="icon-button">⌕</button><button className="icon-button notification">♢<i /></button><div className="header-avatar">AG</div></div></header>
+        {activeModule === "Resumen" ? <Dashboard /> : <ModulePlaceholder module={activeModule} />}
+      </section>
+    </main>
+  );
+}
+
+function Dashboard() {
+  return <div className="dashboard">
+    <div className="welcome-row"><p>Aquí tienes un resumen de lo que ocurre hoy en <b>La Esquina.</b></p><button className="outline-button">Hoy · 24 Jun 2024 <span>⌄</span></button></div>
+    <section className="metrics">
+      <Metric title="Ventas del día" value="$ 1.284.500" detail="+12.5% vs. ayer" trend="up" icon="$" />
+      <Metric title="Pedidos recibidos" value="38" detail="+8.2% vs. ayer" trend="up" icon="▣" />
+      <Metric title="Ticket promedio" value="$ 33.802" detail="-2.4% vs. ayer" trend="down" icon="↗" />
+      <Metric title="Productos en stock" value="124" detail="6 requieren atención" trend="alert" icon="◫" />
+    </section>
+    <div className="main-grid"><section className="panel sales-panel"><div className="panel-heading"><div><h2>Ventas de la semana</h2><p>Comparativo de ingresos diarios</p></div><button className="select-button">Esta semana <span>⌄</span></button></div><div className="chart"><div className="chart-y"><span>$600k</span><span>$400k</span><span>$200k</span><span>$0</span></div><div className="chart-area"><div className="grid-lines"><i /><i /><i /><i /></div><svg viewBox="0 0 640 220" preserveAspectRatio="none" aria-label="Gráfica de ventas"><defs><linearGradient id="fill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stopColor="#f47b4c" stopOpacity=".25" /><stop offset="100%" stopColor="#f47b4c" stopOpacity="0" /></linearGradient></defs><path d="M0 180 C35 165 50 130 90 145 S145 170 180 130 S240 115 270 135 S330 95 360 112 S420 120 450 78 S515 92 540 48 S600 78 640 38 L640 220 L0 220Z" fill="url(#fill)" /><path d="M0 180 C35 165 50 130 90 145 S145 170 180 130 S240 115 270 135 S330 95 360 112 S420 120 450 78 S515 92 540 48 S600 78 640 38" fill="none" stroke="#ee7548" strokeWidth="3" /></svg><div className="chart-x"><span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span><span>Dom</span></div></div></div></section>
+      <section className="panel orders-panel"><div className="panel-heading"><div><h2>Pedidos recientes</h2><p>Últimos pedidos registrados</p></div><button className="text-button">Ver todos →</button></div><div className="order-list">{orders.slice(0, 3).map((order) => <div className="order-row" key={order.id}><div className="order-id"><b>{order.id}</b><small>{order.table}</small></div><div className="order-client">{order.client}<small>Hoy, 12:4{8 - orders.indexOf(order)} pm</small></div><div className="order-total"><b>{order.total}</b><span className={`status ${order.tone}`}>{order.status}</span></div></div>)}</div></section>
+    </div>
+    <div className="bottom-grid"><section className="panel stock-panel"><div className="panel-heading"><div><h2>Estado del inventario</h2><p>Productos con menor disponibilidad</p></div><button className="text-button">Gestionar inventario →</button></div>{stock.map((item) => <div className="stock-row" key={item.name}><div className="stock-name"><span className={`stock-dot ${item.tone}`} /><span><b>{item.name}</b><small>{item.category}</small></span></div><div className="progress"><i className={item.tone} style={{ width: `${item.progress}%` }} /></div><b className="stock-amount">{item.amount}</b></div>)}</section><section className="panel quick-panel"><h2>Acciones rápidas</h2><p>Accede a las tareas más frecuentes</p><div className="quick-actions"><button><span className="quick-icon orange">+</span><b>Nuevo pedido</b><small>Registrar una orden</small></button><button><span className="quick-icon blue">☷</span><b>Agregar producto</b><small>Actualizar el menú</small></button><button><span className="quick-icon green">♙</span><b>Nuevo usuario</b><small>Invitar a tu equipo</small></button></div></section></div>
+  </div>;
+}
+
+function Metric({ title, value, detail, trend, icon }: { title: string; value: string; detail: string; trend: string; icon: string }) {
+  return <article className="metric"><div className={`metric-icon ${trend}`}>{icon}</div><div className="metric-title">{title}<span>ⓘ</span></div><strong>{value}</strong><small className={trend === "down" ? "negative" : trend === "alert" ? "warning" : ""}>{trend === "up" ? "↗" : trend === "down" ? "↘" : "!"} {detail}</small></article>;
+}
+
+function ModulePlaceholder({ module }: { module: Module }) {
+  return <div className="empty-module"><div className="empty-icon">☷</div><h2>Módulo de {module.toLowerCase()}</h2><p>Esta sección está lista para conectar con los datos del sistema.</p><button className="primary-button">Crear primer registro <span>→</span></button></div>;
+}
