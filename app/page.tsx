@@ -1,8 +1,9 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 
 type Module = "Resumen" | "Pedidos" | "Menú" | "Inventario" | "Usuarios";
+type User = { id: string; name: string; email: string; role: "ADMIN" | "WAITER"; active: boolean; createdAt: string };
 
 const modules: { name: Module; icon: string }[] = [
   { name: "Resumen", icon: "⌂" },
@@ -106,7 +107,7 @@ export default function Home() {
       </aside>
       <section className="content">
         <header className="topbar"><div><p className="breadcrumb">Inicio / <b>{activeModule}</b></p><h1>{activeModule === "Resumen" ? "Buenos días, Andrea" : activeModule}</h1></div><div className="top-actions"><button className="icon-button">⌕</button><button className="icon-button notification">♢<i /></button><div className="header-avatar">AG</div></div></header>
-        {activeModule === "Resumen" ? <Dashboard /> : <ModulePlaceholder module={activeModule} />}
+        {activeModule === "Resumen" ? <Dashboard /> : activeModule === "Usuarios" ? <UsersModule /> : <ModulePlaceholder module={activeModule} />}
       </section>
     </main>
   );
@@ -134,4 +135,71 @@ function Metric({ title, value, detail, trend, icon }: { title: string; value: s
 
 function ModulePlaceholder({ module }: { module: Module }) {
   return <div className="empty-module"><div className="empty-icon">☷</div><h2>Módulo de {module.toLowerCase()}</h2><p>Esta sección está lista para conectar con los datos del sistema.</p><button className="primary-button">Crear primer registro <span>→</span></button></div>;
+}
+
+function UsersModule() {
+  const [users, setUsers] = useState<User[]>([]);
+  const [form, setForm] = useState({ name: "", email: "", password: "", role: "WAITER" as User["role"] });
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  async function loadUsers() {
+    const response = await fetch("/api/users");
+    if (!response.ok) throw new Error("No se pudieron cargar los usuarios.");
+    setUsers(await response.json());
+  }
+
+  useEffect(() => {
+    loadUsers().catch((error: Error) => setMessage(error.message)).finally(() => setLoading(false));
+  }, []);
+
+  async function createUser(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setMessage("");
+    const response = await fetch("/api/users", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form)
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      setMessage(data.message || "No se pudo crear el usuario.");
+      return;
+    }
+    setUsers((current) => [data, ...current]);
+    setForm({ name: "", email: "", password: "", role: "WAITER" });
+    setMessage("Usuario creado correctamente.");
+  }
+
+  async function toggleUser(user: User) {
+    const response = await fetch(`/api/users/${user.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ active: !user.active })
+    });
+    if (!response.ok) {
+      setMessage("No se pudo actualizar el estado del usuario.");
+      return;
+    }
+    const updated = await response.json();
+    setUsers((current) => current.map((item) => item.id === updated.id ? updated : item));
+  }
+
+  async function deleteUser(user: User) {
+    if (!window.confirm(`¿Eliminar a ${user.name}?`)) return;
+    const response = await fetch(`/api/users/${user.id}`, { method: "DELETE" });
+    if (!response.ok) {
+      setMessage("No se pudo eliminar el usuario.");
+      return;
+    }
+    setUsers((current) => current.filter((item) => item.id !== user.id));
+  }
+
+  return <div className="users-page">
+    <div className="module-intro"><div><p className="eyebrow">Equipo del restaurante</p><h2>Gestión de usuarios</h2><p className="muted">Registra y administra los accesos de administradores y meseros.</p></div><span className="users-count">{users.length} usuarios</span></div>
+    <div className="users-layout">
+      <form className="panel user-form" onSubmit={createUser}><h2>Nuevo usuario</h2><p>Agrega una cuenta para tu equipo.</p><label htmlFor="user-name">Nombre completo</label><input id="user-name" required value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} placeholder="Ej. Laura Gómez" /><label htmlFor="user-email">Correo electrónico</label><input id="user-email" required type="email" value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} placeholder="correo@ejemplo.com" /><label htmlFor="user-password">Contraseña</label><input id="user-password" required minLength={6} type="password" value={form.password} onChange={(event) => setForm({ ...form, password: event.target.value })} placeholder="Mínimo 6 caracteres" /><label htmlFor="user-role">Rol</label><select id="user-role" value={form.role} onChange={(event) => setForm({ ...form, role: event.target.value as User["role"] })}><option value="WAITER">Mesero</option><option value="ADMIN">Administrador</option></select>{message && <p className="form-message">{message}</p>}<button className="primary-button" type="submit">Guardar usuario <span>→</span></button></form>
+      <section className="panel users-list"><div className="panel-heading"><div><h2>Usuarios registrados</h2><p>Gestiona los permisos de acceso al sistema.</p></div><button className="text-button" onClick={() => loadUsers()}>Actualizar ↻</button></div>{loading ? <p className="muted">Cargando usuarios...</p> : users.length === 0 ? <p className="muted">No hay usuarios registrados.</p> : <div className="user-table">{users.map((user) => <div className="user-row" key={user.id}><div className="avatar">{user.name.slice(0, 2).toUpperCase()}</div><div><b>{user.name}</b><small>{user.email}</small></div><span className={`role-badge ${user.role === "ADMIN" ? "admin" : "waiter"}`}>{user.role === "ADMIN" ? "Administrador" : "Mesero"}</span><span className={`active-badge ${user.active ? "on" : "off"}`}>{user.active ? "Activo" : "Inactivo"}</span><button className="row-action" onClick={() => toggleUser(user)}>{user.active ? "Desactivar" : "Activar"}</button><button className="row-delete" onClick={() => deleteUser(user)} aria-label={`Eliminar ${user.name}`}>×</button></div>)}</div>}</section>
+    </div>
+  </div>;
 }
