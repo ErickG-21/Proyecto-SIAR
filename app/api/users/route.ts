@@ -1,4 +1,3 @@
-import { hash } from "bcryptjs";
 import { NextResponse } from "next/server";
 import { prisma } from "../../../lib/prisma";
 
@@ -41,7 +40,7 @@ export async function POST(request: Request) {
       data: {
         name: body.name.trim(),
         email: body.email.trim().toLowerCase(),
-        passwordHash: await hash(body.password, 12),
+        passwordHash: body.password,
         role: body.role
       },
       select: { id: true, name: true, email: true, role: true, active: true, createdAt: true }

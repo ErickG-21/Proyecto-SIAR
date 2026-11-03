@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cronograma profesional | SIAR</title>
+  <style>
+    :root{--navy:#183c5b;--orange:#ee7548;--ink:#17212b;--muted:#75828c;--line:#e4e9ec;--bg:#f5f8fa}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px "Segoe UI",Arial,sans-serif}
+    .page{max-width:1400px;margin:auto;padding:36px 42px}.header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:28px}
+    .eyebrow{color:var(--orange);font-size:11px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;margin:0 0 8px}
+    h1{font-size:34px;margin:0;color:var(--navy)}h2{font-size:19px;margin:0 0 5px;color:var(--navy)}p{color:var(--muted);margin:0;line-height:1.55}
+    .badge{background:#fff;border:1px solid var(--line);border-radius:20px;padding:10px 15px;color:var(--navy);font-weight:600}
+    .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:18px;box-shadow:0 3px 12px #163c5b08}.stat strong{display:block;color:var(--navy);font-size:26px;margin-top:8px}.stat small{color:var(--muted)}
+    .section{background:#fff;border:1px solid var(--line);border-radius:10px;padding:22px;margin-bottom:22px;overflow:auto}.section-title{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px}
+    .gantt{min-width:850px}.gantt-head,.gantt-row{display:grid;grid-template-columns:270px repeat(8,1fr);align-items:stretch}.gantt-head{background:var(--navy);color:#fff;border-radius:7px 7px 0 0;font-weight:600}.gantt-head div,.gantt-row>div{padding:12px 10px;border-right:1px solid #ffffff24}.gantt-row{min-height:58px;border-bottom:1px solid var(--line)}.gantt-row>div{display:flex;align-items:center}.gantt-row>div:not(:first-child):not(.bar){justify-content:center;background:#fbfcfd}.phase{font-weight:600;color:var(--navy);gap:9px}.phase i{width:9px;height:9px;border-radius:50%;display:inline-block}.bar{height:27px;width:86%;border-radius:5px;color:#fff;font-size:11px;font-weight:600;justify-content:center!important;box-shadow:0 3px 7px #183c5b22}.blue{background:#3e78d8}.green{background:#21a35b}.orange{background:#ee7548}.purple{background:#8b45d9}.mint{background:#54c896}.gray{background:#71808c}
+    table{width:100%;border-collapse:collapse;min-width:800px}th{text-align:left;background:var(--navy);color:#fff;padding:13px;font-size:12px}td{padding:13px;border-bottom:1px solid var(--line);vertical-align:top}td:first-child{font-weight:700;color:var(--navy);width:80px}.status{border-radius:12px;padding:5px 9px;background:#fff0e9;color:#c96742;font-size:11px;font-weight:600;white-space:nowrap}
+    .phases{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.phase-card{border-top:4px solid var(--orange)}.phase-card:nth-child(2){border-color:#3e78d8}.phase-card:nth-child(3){border-color:#21a35b}.phase-card:nth-child(4){border-color:#8b45d9}.phase-card ul{padding-left:18px;color:var(--muted);line-height:1.8;margin-bottom:0}
+    .legend{display:flex;gap:18px;flex-wrap:wrap;font-size:12px;color:var(--muted)}.legend span{display:flex;align-items:center;gap:6px}.legend i{width:12px;height:12px;border-radius:3px;display:inline-block}
+    @media(max-width:800px){.page{padding:24px 16px}.header{display:block}.badge{display:inline-block;margin-top:15px}.summary,.phases{grid-template-columns:1fr 1fr}h1{font-size:27px}}@media(max-width:500px){.summary,.phases{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="header">
+      <div><p class="eyebrow">Plan de desarrollo · SIAR</p><h1>Sistema Integral de Administración para Restaurantes</h1><p style="margin-top:8px">Cronograma del MVP · metodología iterativa e incremental</p><p style="margin-top:6px"><strong>Equipo:</strong> Erick y Jaider</p></div>
+      <span class="badge">Duración estimada: 8 semanas</span>
+    </header>
+
+    <section class="summary">
+      <article class="card stat"><small>Fases</small><strong>7</strong><small>Análisis, desarrollo y entrega</small></article>
+      <article class="card stat"><small>Hitos</small><strong>7</strong><small>Resultados verificables</small></article>
+      <article class="card stat"><small>Módulos</small><strong>5</strong><small>Login, usuarios, menú, pedidos e inventario</small></article>
+      <article class="card stat"><small>Stack</small><strong>TS</strong><small>Next.js · Prisma · PostgreSQL</small></article>
+    </section>
+
+    <section class="section">
+      <div class="section-title"><div><h2>Vista general del proyecto</h2><p>Distribución de fases y dependencias principales.</p></div><div class="legend"><span><i class="blue"></i>Base técnica</span><span><i class="green"></i>Módulos</span><span><i class="orange"></i>Integración</span><span><i class="purple"></i>Entrega</span></div></div>
+      <div class="gantt">
+        <div class="gantt-head"><div>Fase</div><div>Sem 1</div><div>Sem 2</div><div>Sem 3</div><div>Sem 4</div><div>Sem 5</div><div>Sem 6</div><div>Sem 7</div><div>Sem 8</div></div>
+        <div class="gantt-row"><div class="phase"><i class="blue"></i>F1 · Análisis y diseño<br><small>Erick</small></div><div class="bar blue">Diseño</div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+        <div class="gantt-row"><div class="phase"><i class="blue"></i>F2 · Fundación técnica<br><small>Erick</small></div><div></div><div class="bar blue">Base</div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+        <div class="gantt-row"><div class="phase"><i class="green"></i>F3 · Login y usuarios<br><small>Erick</small></div><div></div><div></div><div class="bar green">Usuarios</div><div></div><div></div><div></div><div></div><div></div></div>
+        <div class="gantt-row"><div class="phase"><i class="green"></i>F4 · Gestión del menú<br><small>Jaider</small></div><div></div><div></div><div></div><div class="bar green">Menú</div><div></div><div></div><div></div><div></div></div>
+        <div class="gantt-row"><div class="phase"><i class="orange"></i>F5 · Gestión de pedidos<br><small>Erick</small></div><div></div><div></div><div></div><div></div><div class="bar orange">Pedidos</div><div class="bar orange">Pedidos</div><div></div><div></div></div>
+        <div class="gantt-row"><div class="phase"><i class="mint"></i>F6 · Inventario<br><small>Jaider</small></div><div></div><div></div><div></div><div></div><div></div><div></div><div class="bar mint">Inventario</div><div></div></div>
+        <div class="gantt-row"><div class="phase"><i class="purple"></i>F7 · Integración y entrega<br><small>Erick + Jaider</small></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div class="bar purple">MVP</div></div>
+      </div>
+    </section>
+
+    <section class="section"><div class="section-title"><div><h2>Fases del proyecto</h2><p>Alcance resumido de cada etapa.</p></div></div><div class="phases">
+      <article class="card phase-card"><p class="eyebrow">Semana 1 · Erick</p><h2>Análisis y diseño</h2><p>Definición del alcance, roles y arquitectura.</p><ul><li>Requisitos priorizados</li><li>Modelo entidad-relación</li><li>Patrones de diseño</li></ul></article>
+      <article class="card phase-card"><p class="eyebrow">Semana 2 · Erick</p><h2>Fundación técnica</h2><p>Preparación del entorno y persistencia.</p><ul><li>Next.js y TypeScript</li><li>Prisma y PostgreSQL</li><li>Migración inicial</li></ul></article>
+      <article class="card phase-card"><p class="eyebrow">Semanas 3-4 · Erick y Jaider</p><h2>Acceso y menú</h2><p>Primeros módulos operativos del sistema.</p><ul><li>Erick: login y usuarios</li><li>Erick: roles de acceso</li><li>Jaider: productos y categorías</li></ul></article>
+      <article class="card phase-card"><p class="eyebrow">Semanas 5-8 · Erick y Jaider</p><h2>Operación y entrega</h2><p>Pedidos, inventario y validación del MVP.</p><ul><li>Erick: ciclo de pedidos</li><li>Jaider: alertas de stock</li><li>Ambos: pruebas y documentación</li></ul></article>
+    </div></section>
+
+    <section class="section"><div class="section-title"><div><h2>Actividades y criterios de aceptación</h2><p>Control de avance por entregable.</p></div></div><table><thead><tr><th>ID</th><th>Actividad</th><th>Responsable</th><th>Entregable</th><th>Dependencia</th><th>Estado</th></tr></thead><tbody>
+      <tr><td>F1</td><td>Análisis y diseño</td><td><strong>Erick</strong></td><td>Requisitos, modelo de datos y arquitectura.</td><td>—</td><td><span class="status">Planificada</span></td></tr>
+      <tr><td>F2</td><td>Fundación técnica</td><td><strong>Erick</strong></td><td>Aplicación conectada a PostgreSQL y migración ejecutada.</td><td>F1</td><td><span class="status">Planificada</span></td></tr>
+      <tr><td>F3</td><td>Autenticación y usuarios</td><td><strong>Erick</strong></td><td>Login funcional y CRUD de usuarios con roles.</td><td>F2</td><td><span class="status">Planificada</span></td></tr>
+      <tr><td>F4</td><td>Gestión del menú</td><td><strong>Jaider</strong></td><td>CRUD de productos y control de disponibilidad.</td><td>F2</td><td><span class="status">Planificada</span></td></tr>
+      <tr><td>F5</td><td>Gestión de pedidos</td><td><strong>Erick</strong></td><td>Pedidos con productos, total y estados.</td><td>F4</td><td><span class="status">Planificada</span></td></tr>
+      <tr><td>F6</td><td>Inventario</td><td><strong>Jaider</strong></td><td>Existencias, mínimos y alertas de reposición.</td><td>F4</td><td><span class="status">Planificada</span></td></tr>
+      <tr><td>F7</td><td>Integración y entrega</td><td><strong>Erick + Jaider</strong></td><td>Pruebas, documentación y demostración del MVP.</td><td>F3-F6</td><td><span class="status">Planificada</span></td></tr>
+    </tbody></table></section>
+  </main>
+</body>
+</html>

@@ -1,4 +1,3 @@
-import { compare } from "bcryptjs";
 import { NextResponse } from "next/server";
 import { prisma } from "../../../../lib/prisma";
 
@@ -19,7 +18,8 @@ export async function POST(request: Request) {
   const email = body.email.trim().toLowerCase();
   const user = await prisma.user.findUnique({ where: { email } });
 
-  if (!user || !user.active || !(await compare(body.password, user.passwordHash))) {
+  // Temporalmente se compara texto plano para el desarrollo inicial.
+  if (!user || !user.active || body.password !== user.passwordHash) {
     return NextResponse.json(
       { message: "Correo o contraseña incorrectos." },
       { status: 401 }
